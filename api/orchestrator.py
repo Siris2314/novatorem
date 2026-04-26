@@ -117,11 +117,22 @@ def load_image_with_fallback(url: str) -> Tuple[str, ColorPalette, ColorPalette]
         except ImageProcessingError:
             pass  # Fall through to placeholder
 
+
+    fallback_svg = (
+    '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">'
+    '<rect width="100%" height="100%" fill="#0d1117"/>'
+    '<text x="50%" y="50%" fill="white" font-size="32" '
+    'text-anchor="middle" dominant-baseline="middle">Music</text>'
+    '</svg>'
+    )
+
+    fallback_image = f"data:image/svg+xml;base64,{base64.b64encode(fallback_svg.encode()).decode()}"
+
     # Try placeholder URL for random colors
     try:
         image_data = ImageData("https://placehold.co/300x300/0d1117/ffffff?text=Music")
         return (
-            f'data:image/svg+xml;base64,{base64.b64encode(b"<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"300\\" height=\\"300\\"><rect width=\\"100%\\" height=\\"100%\\" fill=\\"#0d1117\\"/><text x=\\"50%\\" y=\\"50%\\" fill=\\"white\\" font-size=\\"32\\" text-anchor=\\"middle\\" dominant-baseline=\\"middle\\">Music</text></svg>").decode()}',
+            fallback_image,
             image_data.bar_palette,
             image_data.song_palette,
         )
@@ -130,7 +141,7 @@ def load_image_with_fallback(url: str) -> Tuple[str, ColorPalette, ColorPalette]
 
     # Use defaults
     return (
-        f'data:image/svg+xml;base64,{base64.b64encode(b"<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"300\\" height=\\"300\\"><rect width=\\"100%\\" height=\\"100%\\" fill=\\"#0d1117\\"/><text x=\\"50%\\" y=\\"50%\\" fill=\\"white\\" font-size=\\"32\\" text-anchor=\\"middle\\" dominant-baseline=\\"middle\\">Music</text></svg>").decode()}',
+        fallback_image,
         svg_config.default_bar_palette,
         svg_config.default_song_palette,
     )
