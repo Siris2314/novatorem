@@ -147,6 +147,44 @@ def load_image_with_fallback(url: str) -> Tuple[str, ColorPalette, ColorPalette]
     )
 
 
+def get_itunes_album_art(song_name, artist_name):
+    from urllib.parse import urlencode
+
+    query = f"{song_name} {artist_name}"
+    url = "https://itunes.apple.com/search?" + urlencode({
+        "term": query,
+        "media": "music",
+        "entity": "song",
+        "limit": 5
+    })
+
+    response = requests.get(url, timeout=5)
+
+    if response.status_code != 200:
+        return ""
+
+    data = response.json()
+    results = data.get("results", [])
+
+    if not results:
+        return ""
+
+    song_lower = song_name.lower()
+    artist_lower = artist_name.lower()
+
+    best = results[0]
+
+    for result in results:
+        track = result.get("trackName", "").lower()
+        artist = result.get("artistName", "").lower()
+
+        if song_lower in track and artist_lower.split("&")[0].strip() in artist:
+            best = result
+            break
+
+    artwork = best.get("artworkUrl100", "")
+    return artwork.replace("100x100bb", "600x600bb")
+
 def normalize_text_palette(
     palette: ColorPalette,
     min_l: float = 0.35,
@@ -409,7 +447,12 @@ def make_svg(
 
     # Load image and extract colors first (needed for per-bar colors)
     album_art_url = track_data.get("album_art_url", "")
-    image, bar_palette, song_palette = load_image_with_fallback(album_art_url)
+
+    try:
+        image, bar_palette, song_palette = load_image_with_fallback(album_art_url)
+    except Exception:
+        album_art_url = get_itunes_album_art(raw_song, raw_artist)
+        image, bar_palette, song_palette = load_image_with_fallback(album_art_url)
 
     # Compress brightness so the gradient stays readable and bars aren't
     # too dark or washed out
