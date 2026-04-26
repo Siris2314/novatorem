@@ -15,6 +15,7 @@ from typing import Any, Optional, Tuple
 
 import requests
 import urllib3
+import base64
 from base64 import b64encode
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
