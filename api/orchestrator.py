@@ -127,8 +127,7 @@ def load_image_with_fallback(url: str) -> Tuple[str, ColorPalette, ColorPalette]
     '</svg>'
     )
 
-    fallback_image = f"data:image/svg+xml;base64,{base64.b64encode(fallback_svg.encode()).decode()}"
-
+    fallback_image = base64.b64encode(fallback_svg.encode()).decode()
     # Try placeholder URL for random colors
     try:
         image_data = ImageData("https://placehold.co/300x300/0d1117/ffffff?text=Music")
