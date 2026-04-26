@@ -119,7 +119,7 @@ def load_image_with_fallback(url: str) -> Tuple[str, ColorPalette, ColorPalette]
 
     # Try placeholder URL for random colors
     try:
-        image_data = ImageData(svg_config.placeholder_url)
+        image_data = ImageData("https://placehold.co/300x300/0d1117/ffffff?text=Music")
         return (
             svg_config.placeholder_image,
             image_data.bar_palette,
